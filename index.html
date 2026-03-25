@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      #modal-overlay {
+        display: none;
+        justify-content: center;
+        align-items: center;
+        position: fixed; /* viewport ke upar fix ho jaayega */
+        top: 0; /* upar se 0 */
+        left: 0; /* left se 0 */
+        right: 0; /* right se 0 */
+        bottom: 0; /* neeche se 0 */
+        background-color: rgba(0, 0, 0, 0.5); /* dark transparent black */
+      }
+      #modal-box {
+        background-color: white;
+        padding: 50px;
+      }
+      #modal-overlay.show-modal {
+        display: flex;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="library-container"></div>
+
+    <button id="add">Add New Book</button>
+    <div id="modal-overlay">
+      <div id="modal-box">
+        <button id="close">X</button>
+        <form>
+          <label for="title">Title:</label>
+          <input type="text" id="title" name="title" required />
+          <br /><br />
+
+          <!-- Author input -->
+          <label for="author">Author:</label>
+          <input type="text" id="author" name="author" required />
+          <br /><br />
+
+          <!-- isRead checkbox -->
+          <label for="isRead">Is Read:</label>
+          <input type="checkbox" id="isRead" name="isRead" />
+          <br /><br />
+
+          <!-- Submit button -->
+          <button type="submit" id="submit">Submit</button>
+        </form>
+      </div>
+    </div>
+    <script>
+      const myLibrary = [];
+      const library_Container = document.querySelector("#library-container");
+      const add_bookBtn = document.querySelector("#add");
+      const closeBtn = document.querySelector("#close");
+      const overlay = document.querySelector("#modal-overlay");
+      const form = document.querySelector("form");
+
+      add_bookBtn.addEventListener("click", (event) => {
+        overlay.classList.add("show-modal");
+      });
+
+      closeBtn.addEventListener("click", (event) => {
+        overlay.classList.remove("show-modal");
+      });
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const title = document.querySelector("#title").value;
+        const author = document.querySelector("#author").value;
+        const isread = document.querySelector("#isRead").checked;
+
+        addBookToLibrary(title, author, isread);
+        displayBooks();
+        overlay.classList.remove("show-modal");
+        form.reset();
+      });
+
+      function Book(title, author, isRead) {
+        this.title = title;
+        this.author = author;
+        this.isRead = isRead;
+        this.id = crypto.randomUUID();
+      }
+
+      function addBookToLibrary(title, author, isRead) {
+        const newBook = new Book(title, author, isRead);
+        myLibrary.push(newBook);
+      }
+
+      function displayBooks() {
+        library_Container.innerHTML = "";
+        myLibrary.forEach(function (book) {
+          const card = document.createElement("div");
+          card.classList.add("book-card");
+          card.dataset.id = book.id;
+          card.innerHTML = `<h1>${book.title}</h1><p>${book.author}</p><p>${book.isRead}</p>`;
+          library_Container.appendChild(card);
+        });
+      }
+
+      addBookToLibrary("The Hobbit", "J.R.R. Tolkien", true);
+      addBookToLibrary("1984", "George Orwell", false);
+
+      displayBooks();
+    </script>
+  </body>
+</html>
